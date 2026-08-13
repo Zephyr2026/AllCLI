@@ -1,0 +1,139 @@
+{
+  "tools" : [ {
+    "toolId" : "listPets",
+    "name" : "listPets",
+    "version" : "1.0.0",
+    "status" : "draft",
+    "systemRef" : "petstore",
+    "credentialRef" : null,
+    "description" : "列出所有宠物",
+    "endpoint" : {
+      "method" : "GET",
+      "path" : "/pets",
+      "timeoutMs" : 30000
+    },
+    "inputSchema" : {
+      "properties" : {
+        "limit" : {
+          "type" : "integer"
+        }
+      },
+      "required" : [ ],
+      "type" : "object"
+    },
+    "outputSchema" : {
+      "200" : {
+        "items" : {
+          "properties" : {
+            "id" : {
+              "type" : "integer"
+            },
+            "name" : {
+              "type" : "string"
+            },
+            "tag" : {
+              "type" : "string"
+            }
+          },
+          "required" : [ "id", "name" ],
+          "type" : "object"
+        },
+        "type" : "array"
+      }
+    },
+    "sideEffect" : "readonly",
+    "reversibility" : "readonly",
+    "idempotencyKey" : null,
+    "requiredPermission" : null,
+    "hitl" : null,
+    "examples" : null,
+    "owner" : "alice"
+  }, {
+    "toolId" : "createPet",
+    "name" : "createPet",
+    "version" : "1.0.0",
+    "status" : "draft",
+    "systemRef" : "petstore",
+    "credentialRef" : null,
+    "description" : "新增一个宠物",
+    "endpoint" : {
+      "method" : "POST",
+      "path" : "/pets",
+      "timeoutMs" : 30000
+    },
+    "inputSchema" : {
+      "properties" : {
+        "body" : {
+          "properties" : {
+            "id" : {
+              "type" : "integer"
+            },
+            "name" : {
+              "type" : "string"
+            },
+            "tag" : {
+              "type" : "string"
+            }
+          },
+          "required" : [ "id", "name" ],
+          "type" : "object"
+        }
+      },
+      "required" : [ "body" ],
+      "type" : "object"
+    },
+    "outputSchema" : {
+      "201" : { }
+    },
+    "sideEffect" : "write",
+    "reversibility" : "reversible",
+    "idempotencyKey" : null,
+    "requiredPermission" : null,
+    "hitl" : {
+      "approverRef" : "alice",
+      "approverType" : "owner",
+      "enabled" : true,
+      "timeoutSec" : 600
+    },
+    "examples" : null,
+    "owner" : "alice"
+  }, {
+    "toolId" : "deletePet",
+    "name" : "deletePet",
+    "version" : "1.0.0",
+    "status" : "draft",
+    "systemRef" : "petstore",
+    "credentialRef" : null,
+    "description" : "删除指定宠物",
+    "endpoint" : {
+      "method" : "DELETE",
+      "path" : "/pets/{petId}",
+      "timeoutMs" : 30000
+    },
+    "inputSchema" : {
+      "properties" : {
+        "petId" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "petId" ],
+      "type" : "object"
+    },
+    "outputSchema" : {
+      "204" : { }
+    },
+    "sideEffect" : "write",
+    "reversibility" : "irreversible",
+    "idempotencyKey" : null,
+    "requiredPermission" : null,
+    "hitl" : {
+      "approverRef" : "alice",
+      "approverType" : "owner",
+      "enabled" : true,
+      "timeoutSec" : 600
+    },
+    "examples" : null,
+    "owner" : "alice"
+  } ],
+  "count" : 3
+}

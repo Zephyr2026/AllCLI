@@ -1,0 +1,27 @@
+# 临时 / 下载物
+_build/
+*.zip
+go/
+
+# Go
+*.exe
+engine/vendor/
+gateway/vendor/
+
+# Java
+target/
+*.class
+*.jar
+!**/maven-wrapper.jar
+
+# Node / 前端
+node_modules/
+dist/
+.vite/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+.DS_Store

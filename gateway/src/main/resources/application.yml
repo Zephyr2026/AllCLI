@@ -1,0 +1,38 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: allcli-gateway
+  datasource:
+    url: jdbc:mysql://192.168.85.128:3306/allcli?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8&useUnicode=true
+    username: root
+    password: AllCLI@2026
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 192.168.85.128
+      port: 6379
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+
+# 网关配置
+allcli:
+  gateway:
+    rate-limit:
+      window-seconds: 60      # 限流窗口
+      max-requests: 100       # 窗口内最大请求数（agentId×toolId）
+    idempotency:
+      window-minutes: 5       # 幂等窗口
+  credential:
+    # KEK（国密 SM4 主密钥，一期开发用固定值，16/24/32 字节 hex；生产换行内 KMS）
+    kek-hex: "00112233445566778899aabbccddeeff"
+
+logging:
+  level:
+    root: WARN
+    com.allcli: INFO

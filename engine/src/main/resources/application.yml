@@ -1,0 +1,22 @@
+spring:
+  main:
+    web-application-type: none   # CLI 模式，不起 web server
+    lazy-initialization: true    # 延迟初始化，加快 CLI 启动
+  application:
+    name: allcli-engine
+  datasource:
+    url: jdbc:mysql://192.168.85.128:3306/allcli?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8&useUnicode=true
+    username: root
+    password: AllCLI@2026
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate         # 表已由 sql/V1__init.sql 建好，只校验不重建
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    root: WARN
+    com.allcli: INFO

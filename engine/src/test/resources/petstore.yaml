@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+  title: Petstore 示例（AllCLI 转化引擎测试用）
+  version: "1.0"
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: 列出所有宠物
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        '200':
+          description: 宠物列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Pet' }
+    post:
+      operationId: createPet
+      summary: 新增一个宠物
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Pet' }
+      responses:
+        '201': { description: 创建成功 }
+  /pets/{petId}:
+    delete:
+      operationId: deletePet
+      summary: 删除指定宠物
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: 删除成功 }
+components:
+  schemas:
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        tag: { type: string }

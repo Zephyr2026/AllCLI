@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.12</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.allcli</groupId>
+    <artifactId>allcli-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>AllCLI Parent</name>
+    <description>存量系统 → AI 工具化平台（后端统一 Java/Spring Boot）</description>
+
+    <modules>
+        <module>engine</module>
+        <module>gateway</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <swagger-parser.version>2.1.46</swagger-parser.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- OpenAPI 3 解析：对标原 Go kin-openapi -->
+            <dependency>
+                <groupId>io.swagger.parser.v3</groupId>
+                <artifactId>swagger-parser-v3</artifactId>
+                <version>${swagger-parser.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
