@@ -15,15 +15,17 @@
     <name>AllCLI Gateway</name>
     <description>L4 工具网关：invoke 流水线（鉴权/意图/限流/分级-HITL/转发/审计）+ 凭证信封加密</description>
 
-    <properties>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
-    </properties>
-
     <dependencies>
         <!-- Web (MVC, 同步阻塞栈；invoke 是编排流水线非反向代理，不用响应式 SCG) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- MCP Server（D12：与网关同进程；tools/list + tools/call，streamable HTTP 端点 /mcp） -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
         </dependency>
 
         <!-- JPA：读 ToolDefinition/System/Credential/Subscription，写 Invocation/Approval -->
@@ -44,12 +46,8 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JSON Schema 校验（意图校验：arguments vs inputSchema） -->
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>1.5.1</version>
-        </dependency>
+        <!-- JSON Schema 校验：复用 MCP SDK 的 DefaultJsonSchemaValidator（mcp-json-jackson2，经 starter 传递），
+             不再直依赖 networknt（1.x 与 SDK 所需 2.x 的 Dialects 类冲突，2.x 又是彻底重写无旧 API） -->
 
         <!-- 国密 SM4 软实现（凭证信封加密，一期 Vault 软实现） -->
         <dependency>

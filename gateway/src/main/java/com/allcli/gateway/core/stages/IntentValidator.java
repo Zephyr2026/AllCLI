@@ -1,29 +1,23 @@
 package com.allcli.gateway.core.stages;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SchemaValidatorsConfig;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
 import com.allcli.gateway.api.dto.GatewayException;
 import com.allcli.gateway.core.InvokeContext;
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
+import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
  * Step 3：意图校验。arguments vs tool.inputSchema（JSON Schema 结构校验）。
  *
- * <p>M2 先做结构校验（draft-07）；业务合理性校验留后续。
+ * <p>校验器复用 MCP SDK 的 DefaultJsonSchemaValidator（底层 networknt json-schema-validator 2.x，
+ * 与 spring-ai-starter-mcp-server 同一依赖树，避免 1.x/2.x 双版本冲突）。M2 先做结构校验；
+ * 业务合理性校验留后续。
  */
 @Component
 public class IntentValidator {
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final JsonSchemaFactory factory =
-            JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+    private final JsonSchemaValidator validator = new DefaultJsonSchemaValidator();
 
     public void validate(InvokeContext ctx) {
         Map<String, Object> schema = ctx.getTool().getInputSchema();
@@ -31,14 +25,12 @@ public class IntentValidator {
             return; // 无 schema 则跳过
         }
         try {
-            JsonNode schemaNode = mapper.valueToTree(schema);
-            JsonNode dataNode = mapper.valueToTree(
+            JsonSchemaValidator.ValidationResponse resp = validator.validate(
+                    schema,
                     ctx.getRequest().getArguments() == null ? Map.of() : ctx.getRequest().getArguments());
-            JsonSchema jsonSchema = factory.getSchema(schemaNode, SchemaValidatorsConfig.builder().build());
-            Set<ValidationMessage> errors = jsonSchema.validate(dataNode);
-            if (!errors.isEmpty()) {
+            if (!resp.valid()) {
                 throw GatewayException.of("INTENT_REJECTED", "validation",
-                        "入参校验失败: " + errors.iterator().next().getMessage(), false);
+                        "入参校验失败: " + resp.errorMessage(), false);
             }
         } catch (GatewayException e) {
             throw e;

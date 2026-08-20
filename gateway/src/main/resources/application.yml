@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: allcli-gateway
+  ai:
+    mcp:
+      server:
+        name: allcli-gateway
+        version: 0.1.0
+        protocol: STREAMABLE   # Streamable HTTP 传输（缺省 SSE）；端点 /mcp
   datasource:
     url: jdbc:mysql://192.168.85.128:3306/allcli?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8&useUnicode=true
     username: root
@@ -13,6 +19,9 @@ spring:
     redis:
       host: 192.168.85.128
       port: 6379
+    web:
+      pageable:
+        max-page-size: 100   # 目录分页上限
   jpa:
     hibernate:
       ddl-auto: validate
@@ -22,6 +31,9 @@ spring:
 
 # 网关配置
 allcli:
+  mcp:
+    # MCP 调用无 Authorization 头时回退的演示 agent（空=拒绝；Claude Code 用 --header 传真实身份）
+    default-agent: ""
   gateway:
     rate-limit:
       window-seconds: 60      # 限流窗口

@@ -17,8 +17,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 /**
- * 工具定义只读副本（映射 sys_tool_definition），网关按 tool_id/version 解析调用所需元数据。
- * 字段与 engine 模块对齐；网关侧只读不写。
+ * 工具定义（映射 sys_tool_definition），网关按 tool_id/version 解析调用所需元数据。
+ * 字段与 engine 模块对齐；M3 起目录 publish/deprecate 会更新 status（其余字段仍由 engine 写入）。
  */
 @Entity
 @Table(name = "sys_tool_definition")
