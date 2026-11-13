@@ -37,3 +37,18 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+e2e-shots/
+/AllCLI_PRD详细设计.md
+/AllCLI_WBS与排期.md
+/AllCLI_一页纸摘要.md
+/AllCLI_产品白皮书(销售版).md
+/AllCLI_产品白皮书.md
+/AllCLI_使用手册.md
+/AllCLI_技术架构与选型.md
+/AllCLI_技术选型打分表.md
+/AllCLI_演示材料.md
+/AllCLI_需求说明书.md
+/DEVELOPMENT.md
+/金点子报名表.txt
+/银行AI原生改造路线图.md
+/银行AI原生改造路线图.pptx

@@ -51,7 +51,8 @@ class ToolCatalogControllerTest {
 
     @Test
     void listReturnsPaginatedSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/tools"))
+        // q 限定自身种子，不依赖库为空（DB 可能留有 E2E 演示数据）
+        mockMvc.perform(get("/api/v1/tools").param("q", PREFIX))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("OK"))
                 .andExpect(jsonPath("$.data.total").value(3))
@@ -69,7 +70,8 @@ class ToolCatalogControllerTest {
 
     @Test
     void filterByReversibility() throws Exception {
-        mockMvc.perform(get("/api/v1/tools").param("reversibility", "irreversible"))
+        mockMvc.perform(get("/api/v1/tools")
+                        .param("q", PREFIX).param("reversibility", "irreversible"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.total").value(1))
                 .andExpect(jsonPath("$.data.items[0].toolId").value("cat_t_b"));
@@ -87,7 +89,8 @@ class ToolCatalogControllerTest {
 
     @Test
     void paginationSlice() throws Exception {
-        mockMvc.perform(get("/api/v1/tools").param("page", "0").param("size", "2"))
+        mockMvc.perform(get("/api/v1/tools")
+                        .param("q", PREFIX).param("page", "0").param("size", "2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.pageSize").value(2))
                 .andExpect(jsonPath("$.data.total").value(3))

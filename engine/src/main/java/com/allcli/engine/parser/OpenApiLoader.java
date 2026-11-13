@@ -31,19 +31,36 @@ public final class OpenApiLoader {
 
     /** 从本地文件或 URL 字符串加载并解析 OpenAPI 文档。 */
     public static OpenAPI load(String input) {
+        SwaggerParseResult result;
+        if (isUrl(input)) {
+            result = new OpenAPIV3Parser().readLocation(input, auth(), parseOptions());
+        } else {
+            result = readContents(readFile(input));
+        }
+        return checked(result);
+    }
+
+    /**
+     * 解析 OpenAPI 文档内容字符串（M4 网关导入 API 用：sourceContent 或抓取后的 sourceUrl 均走此入口）。
+     * 与 {@link #load(String)} 共用同一份 ParseOptions 与错误处理。
+     */
+    public static OpenAPI parse(String content) {
+        return checked(readContents(content));
+    }
+
+    private static ParseOptions parseOptions() {
         ParseOptions opts = new ParseOptions();
         opts.setResolve(true);
         opts.setResolveFully(true);
         opts.setInferSchemaType(false);
+        return opts;
+    }
 
-        SwaggerParseResult result;
-        if (isUrl(input)) {
-            result = new OpenAPIV3Parser().readLocation(input, auth(), opts);
-        } else {
-            String content = readFile(input);
-            result = new OpenAPIV3Parser().readContents(content, auth(), opts);
-        }
+    private static SwaggerParseResult readContents(String content) {
+        return new OpenAPIV3Parser().readContents(content, auth(), parseOptions());
+    }
 
+    private static OpenAPI checked(SwaggerParseResult result) {
         if (result.getMessages() != null && !result.getMessages().isEmpty()) {
             // 解析告警不致命（如未识别扩展），仅记日志；openAPI 仍可能有效。
             System.err.println("[OpenApiLoader] parse warnings: " + result.getMessages());

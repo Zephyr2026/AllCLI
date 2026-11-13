@@ -34,6 +34,10 @@ allcli:
   mcp:
     # MCP 调用无 Authorization 头时回退的演示 agent（空=拒绝；Claude Code 用 --header 传真实身份）
     default-agent: ""
+  admin:
+    # 管理面（控制面）token（M4）：Authorization: Bearer admin_<secret>，逗号分隔多值。
+    # 一期明文配置（内网口径），生产换环境变量/配置中心注入
+    tokens: "m4-dev-admin"
   gateway:
     rate-limit:
       window-seconds: 60      # 限流窗口
@@ -48,3 +52,13 @@ logging:
   level:
     root: WARN
     com.allcli: INFO
+
+# Prometheus 抓取（一期内网免鉴权口径；/actuator/** 不在 admin 拦截器范围）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health
+  metrics:
+    tags:
+      application: allcli-gateway

@@ -32,17 +32,32 @@ public class IdempotencyChecker {
         if (!"write".equals(ctx.getTool().getSideEffect())) {
             return;
         }
-        String inputDigest = GatewayUtil.digest(ctx.getRequest().getArguments());
-        ctx.setInputDigest(inputDigest);
-
-        Invocation prev = invRepo
-                .findFirstByAgentIdAndToolIdAndInputDigestAndStatusOrderByIdDesc(
-                        ctx.getAgentId(), ctx.getTool().getToolId(), inputDigest, "success")
-                .orElse(null);
-        if (prev != null && prev.getCreatedAt() != null
-                && prev.getCreatedAt().isAfter(LocalDateTime.now().minusMinutes(windowMinutes))) {
+        Invocation prev = findRecent(ctx, "success");
+        if (prev != null) {
             throw GatewayException.of("IDEMPOTENT_REPLAY", "business",
                     "幂等命中，返回首次结果（invocationId=" + prev.getInvocationId() + "）", false);
         }
+    }
+
+    /**
+     * 近窗内同 (agent,tool,inputDigest) 且指定状态的最近一次调用；无则 null。
+     * DIRECT 路径查 success（重放）；HITL 路径另查 hitl_pending（重复提交返回同一审批单，不重复挂起）。
+     */
+    public Invocation findRecent(InvokeContext ctx, String status) {
+        if (!"write".equals(ctx.getTool().getSideEffect())) {
+            return null;
+        }
+        if (ctx.getInputDigest() == null) {
+            ctx.setInputDigest(GatewayUtil.digest(ctx.getRequest().getArguments()));
+        }
+        Invocation prev = invRepo
+                .findFirstByAgentIdAndToolIdAndInputDigestAndStatusOrderByIdDesc(
+                        ctx.getAgentId(), ctx.getTool().getToolId(), ctx.getInputDigest(), status)
+                .orElse(null);
+        if (prev != null && prev.getCreatedAt() != null
+                && prev.getCreatedAt().isAfter(LocalDateTime.now().minusMinutes(windowMinutes))) {
+            return prev;
+        }
+        return null;
     }
 }

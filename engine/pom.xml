@@ -56,6 +56,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- 主 artifact 保持普通 jar（供 gateway 依赖纯 Java 转化类）；
+                         可执行 jar 加 -exec 后缀（CLI 用 allcli-engine-*-exec.jar） -->
+                    <classifier>exec</classifier>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

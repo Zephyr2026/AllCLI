@@ -52,7 +52,8 @@ public class McpCatalogRefresher {
         try {
             switch (event.action()) {
                 case ToolCatalogChangedEvent.ACTION_PUBLISHED,
-                     ToolCatalogChangedEvent.ACTION_GRAY -> toolRepo.findByToolId(event.toolId())
+                     ToolCatalogChangedEvent.ACTION_GRAY,
+                     ToolCatalogChangedEvent.ACTION_UPDATED -> toolRepo.findByToolId(event.toolId())
                         .ifPresentOrElse(t -> server.addTool(registry.specificationOf(t)),
                                 () -> log.warn("目录变更但工具不存在，忽略: {}", event.toolId()));
                 case ToolCatalogChangedEvent.ACTION_DEPRECATED -> server.removeTool(event.toolId());

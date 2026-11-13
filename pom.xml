@@ -46,6 +46,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- M4：gateway 控制面复用 engine 纯 Java 转化类（OpenApiLoader/ToolMapper） -->
+            <dependency>
+                <groupId>com.allcli</groupId>
+                <artifactId>allcli-engine</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

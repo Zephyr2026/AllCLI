@@ -90,7 +90,22 @@ public class InvokePipeline {
                 return runSecondHalf(ctx);
             }
 
-            // HITL：挂起
+            // HITL：挂起前先幂等查重（近窗同 agent+tool+inputDigest）
+            //   已 success → 重放异常；挂起中 → 返回同一审批单（重复提交不重复挂起）
+            Invocation prevDone = idempotencyChecker.findRecent(ctx, "success");
+            if (prevDone != null) {
+                throw GatewayException.of("IDEMPOTENT_REPLAY", "business",
+                        "幂等命中，返回首次结果（invocationId=" + prevDone.getInvocationId() + "）", false);
+            }
+            Invocation prevPending = idempotencyChecker.findRecent(ctx, "hitl_pending");
+            if (prevPending != null && prevPending.getApprovalId() != null) {
+                return InvokeData.builder()
+                        .status("pending_approval")
+                        .invocationId(prevPending.getInvocationId())
+                        .approvalId(prevPending.getApprovalId())
+                        .build();
+            }
+
             boolean requireConfirm = decision == ClassifyDecider.Decision.HITL_CONFIRM;
             String approvalId = hitlService.suspend(ctx, requireConfirm);
             suspendedRequests.put(approvalId, request);

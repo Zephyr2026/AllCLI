@@ -49,11 +49,30 @@
         <!-- JSON Schema 校验：复用 MCP SDK 的 DefaultJsonSchemaValidator（mcp-json-jackson2，经 starter 传递），
              不再直依赖 networknt（1.x 与 SDK 所需 2.x 的 Dialects 类冲突，2.x 又是彻底重写无旧 API） -->
 
+        <!-- 转化引擎（M4 导入 REST 化）：仅用纯 Java 类 OpenApiLoader/ToolMapper，
+             engine 的 Spring bean/实体不在本模块扫描范围（com.allcli.gateway 为根） -->
+        <dependency>
+            <groupId>com.allcli</groupId>
+            <artifactId>allcli-engine</artifactId>
+        </dependency>
+
         <!-- 国密 SM4 软实现（凭证信封加密，一期 Vault 软实现） -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
             <version>1.78.1</version>
+        </dependency>
+
+        <!-- Actuator + Prometheus（FR-OPS-01 一期：QPS/延迟/JVM 基础指标，/actuator/prometheus）。
+             micrometer 1.15 的 micrometer-registry-prometheus 已内置新客户端类（io.micrometer.prometheusmetrics），
+             满足 Boot 3.5 自动配置条件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
         <dependency>

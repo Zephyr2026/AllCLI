@@ -64,6 +64,31 @@ public class SubscriptionService {
         return toResponse(subRepo.save(sub));
     }
 
+    /** 管理面：按状态分页列表（status 空=全部）。 */
+    public org.springframework.data.domain.Page<SubscriptionResponse> list(
+            String status, org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<Subscription> page =
+                (status == null || status.isBlank())
+                        ? subRepo.findAll(pageable)
+                        : subRepo.findByStatus(status.trim(), pageable);
+        return page.map(SubscriptionService::toResponse);
+    }
+
+    /** 管理面：revoke 已生效订阅（Kill Switch 最小版）——invoke 鉴权只认 approved，立即阻断。 */
+    @Transactional
+    public SubscriptionResponse revoke(String subId, String operator) {
+        Subscription sub = subRepo.findBySubId(subId)
+                .orElseThrow(() -> GatewayException.of("SUB_NOT_FOUND", "validation",
+                        "订阅不存在: " + subId, false));
+        if ("revoked".equals(sub.getStatus()) || "rejected".equals(sub.getStatus())) {
+            throw GatewayException.of("INVALID_STATUS_TRANSITION", "business",
+                    "订阅已是终态: " + sub.getStatus(), false);
+        }
+        sub.setStatus("revoked");
+        sub.setApprovedBy(operator);
+        return toResponse(subRepo.save(sub));
+    }
+
     private static boolean isBlank(String s) {
         return s == null || s.isBlank();
     }
