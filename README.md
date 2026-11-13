@@ -131,8 +131,9 @@ claude mcp add --transport http allcli http://localhost:8088/mcp \
 * 感谢 **Vue**、**Element Plus** 带来的高效前端开发体验。
 * 感谢 **MySQL**、**Redis** 等开源软件构建的坚实生态。
 ## 🤝 赞助
------
-<img width="600" height="800" alt="3d76dc2bc7a9bcd1cf643dec20b9090e" src="https://github.com/user-attachments/assets/b761055c-83ec-43f8-8463-e118acfa9bd0" />
+
+<img width="400" height="600" alt="3d76dc2bc7a9bcd1cf643dec20b9090e" src="https://github.com/user-attachments/assets/b761055c-83ec-43f8-8463-e118acfa9bd0" />
+
 ## 📝 许可证
 
 [木兰公共许可证（第 2 版）MulanPSL-2.0](LICENSE) © 2026 AllCLI 贡献者
