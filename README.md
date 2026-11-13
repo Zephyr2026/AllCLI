@@ -65,7 +65,7 @@ AllCLI/
 1. **克隆仓库**
 
    ```shell
-   git clone https://gitee.com/dragonLeaf/AllCLI.git
+   git clone https://gitee.com/Zephyr2026/AllCLI.git
    cd AllCLI
    ```
 
@@ -101,8 +101,6 @@ AllCLI/
 
 6. **登录**：登录页填入 admin token（开发默认 `admin_m4-dev-admin`，即 `admin_` + 配置值）与默认 Agent ID（演示用 `agent_demo`）。
 
-> 五分钟全链路演示（mock 下游 → 导入 petstore → 发布 → 订阅 → MCP 调用 → HITL 审批）的实测记录与开发细节见 [DEVELOPMENT.md](DEVELOPMENT.md)，产品与设计文档见根目录 `AllCLI_*.md`。
-
 ## 🔌 接入你的 Agent
 
 任何 MCP 客户端均可接入。以 Claude Code 为例：
@@ -132,7 +130,9 @@ claude mcp add --transport http allcli http://localhost:8088/mcp \
 * 感谢 **[Model Context Protocol](https://modelcontextprotocol.io/)** 与 **Spring AI** 团队提供的开放协议与实现。
 * 感谢 **Vue**、**Element Plus** 带来的高效前端开发体验。
 * 感谢 **MySQL**、**Redis** 等开源软件构建的坚实生态。
-
+## 🤝 赞助
+-----
+<img width="1279" height="1740" alt="3d76dc2bc7a9bcd1cf643dec20b9090e" src="https://github.com/user-attachments/assets/b761055c-83ec-43f8-8463-e118acfa9bd0" />
 ## 📝 许可证
 
 [木兰公共许可证（第 2 版）MulanPSL-2.0](LICENSE) © 2026 AllCLI 贡献者
