@@ -100,6 +100,7 @@ AllCLI/
    ```
 
 6. **登录**：登录页填入 admin token（开发默认 `admin_m4-dev-admin`，即 `admin_` + 配置值）与默认 Agent ID（演示用 `agent_demo`）。
+<img width="1920" height="947" alt="首页" src="https://github.com/user-attachments/assets/56f4faa5-1ac5-4f53-bca3-b5d898bb2484" />
 
 ## 🔌 接入你的 Agent
 
