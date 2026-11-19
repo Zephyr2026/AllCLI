@@ -1,75 +1,77 @@
-# AllCLI · 存量系统 → AI 工具化平台
+# AllCLI · Legacy Systems → AI Tooling Platform
 
-> **让每一个存量系统，都能被 AI 安全、智能地调用。**
-> 扔进一份 OpenAPI/Swagger 文件，存量 REST 接口一键变成带语义描述、Schema、副作用声明的「AI 工具」，经 MCP 网关暴露给 Agent —— 存量系统零改造，AI 治理零旁路。
+English | **[简体中文](README.zh-CN.md)**
+
+> **Let every legacy system be invoked by AI — safely and intelligently.**
+> Drop in an OpenAPI/Swagger file and existing REST endpoints become "AI tools" in one click — complete with semantic descriptions, schemas, and side-effect declarations — exposed to Agents through an MCP gateway. Zero changes to legacy systems, zero bypasses around AI governance.
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](#) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen)](#) [![Spring AI](https://img.shields.io/badge/Spring%20AI-1.1-green)](#) [![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-blue)](#) [![Vue](https://img.shields.io/badge/Vue-3-42b883)](#) [![Tests](https://img.shields.io/badge/tests-110%20passed-success)](#) [![License](https://img.shields.io/badge/License-MulanPSL--2.0-red)](LICENSE)
 
-## ✨ 项目亮点
+## ✨ Highlights
 
-* ⚡ **存量零改造**：不需要改动老系统一行代码，上传 OpenAPI/Swagger 文件即可生成工具定义 —— 语义描述、JSON Schema、示例、副作用（只读/破坏性/可逆/幂等）与 HITL 审批要求全部自动推断。
-* 🛡️ **治理零旁路**：所有调用走 10 步 invoke 流水线（鉴权 → 校验 → 限流 → 分级 → HITL 人审 → 幂等 → 凭证加密注入 → 脱敏 → 调用 → 审计），MCP `tools/call` 与管理面同一条链路，无后门。
-* 🔌 **MCP 原生**：内置 MCP Server（Streamable HTTP `/mcp`），Claude Code 等任意 MCP 客户端一行命令接入；工具自带 `readOnlyHint` / `destructiveHint` 注解与 `_meta` 治理字段。
-* 🧪 **上线自检**：沙箱试运行生成确定性 mock 响应（不触达真实系统）+ 质量自检 checklist，坏工具上不了线。
-* 🖥️ **全套控制台**：Vue 3 管理台 —— 指标看板 / 工具目录 / OpenAPI 导入向导 / 在线调用测试 / HITL 审批中心 / 订阅治理 / 审计导出 / 系统与凭证注册。
-* 🚀 **一键断流**：订阅吊销（revoke）即 Kill Switch，invoke 立即被拒，AI 失控风险秒级止损。
+* ⚡ **Zero legacy refactoring**: Not a single line of the old system needs to change — upload an OpenAPI/Swagger file and tool definitions are generated with semantic descriptions, JSON Schema, examples, side effects (read-only / destructive / reversible / idempotent), and HITL approval requirements all inferred automatically.
+* 🛡️ **Zero governance bypass**: Every call goes through a 10-step invoke pipeline (auth → validation → rate limiting → risk classification → HITL review → idempotency → encrypted credential injection → data masking → invocation → audit). MCP `tools/call` and the admin plane share the exact same chain — no backdoors.
+* 🔌 **MCP native**: Built-in MCP Server (Streamable HTTP `/mcp`); any MCP client such as Claude Code connects with a single command; tools carry `readOnlyHint` / `destructiveHint` annotations and `_meta` governance fields.
+* 🧪 **Pre-launch self-check**: Sandbox dry-runs produce deterministic mock responses (real systems are never touched) plus a quality checklist — bad tools simply can't go live.
+* 🖥️ **Full console**: Vue 3 admin console — metrics dashboard / tool catalog / OpenAPI import wizard / online invoke testing / HITL approval center / subscription governance / audit export / system & credential registration.
+* 🚀 **One-click kill switch**: Revoking a subscription is a kill switch — invokes are rejected immediately, containing runaway-AI risk within seconds.
 
-## 📘 项目概述
+## 📘 Overview
 
-**AllCLI** 是一个「存量系统 → AI 工具化」平台：**L1 转化引擎**把存量 REST 接口（OpenAPI/Swagger 描述）转化为标准工具定义并持久化；**L4 运行时网关**以 MCP / Function Calling 协议把工具暴露给各类 Agent，工具目录（注册 / 发现 / 订阅 / 发布）与全部安全治理策略内置其间。后端为 Java / Spring Boot 多模块工程，前端为独立 Vue 3 工程。
+**AllCLI** is a "legacy systems → AI tooling" platform: the **L1 conversion engine** turns existing REST endpoints (described by OpenAPI/Swagger) into standard tool definitions and persists them; the **L4 runtime gateway** exposes those tools to any Agent via MCP / Function Calling protocols, with the tool catalog (register / discover / subscribe / publish) and all security governance policies built in. The backend is a Java / Spring Boot multi-module project; the frontend is a standalone Vue 3 project.
 
 ```mermaid
 flowchart LR
-    A["AI Agent<br/>(Claude Code / 自研 Agent)"] -->|"MCP tools/list · tools/call"| G["运行时网关 :8088<br/>10 步 invoke 流水线<br/>鉴权·限流·HITL·幂等·凭证·脱敏·审计"]
-    G <--> C["L3 工具目录<br/>注册/发现/订阅/发布"]
-    E["L1 转化引擎 engine<br/>OpenAPI → 工具定义"] -->|持久化| C
-    G -->|"凭证注入 + 转发"| S["存量系统<br/>(REST / OpenAPI)"]
-    M["控制面 admin API<br/>+ Vue3 控制台"] --> C
+    A["AI Agent<br/>(Claude Code / custom Agent)"] -->|"MCP tools/list · tools/call"| G["Runtime Gateway :8088<br/>10-step invoke pipeline<br/>auth·rate-limit·HITL·idempotency·credentials·masking·audit"]
+    G <--> C["L3 Tool Catalog<br/>register/discover/subscribe/publish"]
+    E["L1 Conversion Engine<br/>OpenAPI → tool definitions"] -->|persist| C
+    G -->|"credential injection + forward"| S["Legacy Systems<br/>(REST / OpenAPI)"]
+    M["Admin API control plane<br/>+ Vue3 console"] --> C
 ```
 
-## 🌟 核心功能
+## 🌟 Core Features
 
-* **一键转化**：OpenAPI/Swagger → 工具定义（语义 / Schema / 示例 / 副作用 / HITL 自动推断），CLI `--persist` 与异步导入 API 两种入口
-* **工具目录**：注册、脱敏检索、订阅 + 审批、发布（写版本快照，MCP `tools/list` 热更新免重启）
-* **运行时治理**：10 步流水线 —— Agent 鉴权、JSON Schema 校验、限流、风险分级、HITL 人审、幂等去重、凭证 SM4 信封加密、响应脱敏、全量调用审计
-* **HITL 人机协同**：写操作挂起返回 `pending_approval`（正常 tool result 而非错误），审批通过后放行
-* **沙箱试运行 + 质量自检**：确定性 mock 可做回归对比；writeGuard 等上线前检查（reversibility 未标注直接 fail）
-* **控制面 admin API**：系统 / 凭证注册（密钥不回显）、导入 job、语义编辑（published 描述热生效）、审计查询 + CSV 导出、指标看板、订阅治理
-* **可观测**：Prometheus 端点（QPS / 延迟 / JVM）+ 调用审计留痕
-* **前端控制台约 9 页**：登录 / 看板 / 目录 / 工具详情 / 导入向导 / 调用 Playground（内联审批）/ 订阅治理 / HITL 审批中心 / 审计 / 系统凭证
+* **One-click conversion**: OpenAPI/Swagger → tool definitions (semantics / schema / examples / side effects / HITL auto-inferred), via two entry points — the CLI with `--persist` and an async import API
+* **Tool catalog**: registration, masked search, subscription + approval, publishing (writes version snapshots; MCP `tools/list` hot-reloads without restart)
+* **Runtime governance**: 10-step pipeline — agent authentication, JSON Schema validation, rate limiting, risk classification, HITL review, idempotent deduplication, SM4 envelope-encrypted credentials, response masking, full invoke auditing
+* **HITL human-in-the-loop**: write operations are suspended and return `pending_approval` (a normal tool result, not an error), then released once approved
+* **Sandbox dry-run + quality self-check**: deterministic mocks enable regression comparison; pre-launch checks such as writeGuard (an unlabeled reversibility fails outright)
+* **Admin control-plane API**: system / credential registration (secrets never echoed back), import jobs, semantic editing (published descriptions take effect live), audit query + CSV export, metrics dashboard, subscription governance
+* **Observable**: Prometheus endpoints (QPS / latency / JVM) plus a full invoke audit trail
+* **~9 frontend pages**: login / dashboard / catalog / tool detail / import wizard / invoke playground (inline approval) / subscription governance / HITL approval center / audit / systems & credentials
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-* **后端**：Java 17 · Spring Boot 3.5 · Spring AI 1.1（MCP java-sdk，Streamable HTTP 传输）
-* **存储**：MySQL 8.0（元数据七表，`sql/V1__init.sql`）· Redis 7
-* **前端**：Vue 3 + TypeScript + Vite + Element Plus + Pinia
-* **可观测**：Spring Boot Actuator + Prometheus
-* **测试**：JUnit 5 —— engine 29 + gateway 81，共 **110 个后端测试全绿**；另有 Playwright UI 冒烟脚本
+* **Backend**: Java 17 · Spring Boot 3.5 · Spring AI 1.1 (MCP java-sdk, Streamable HTTP transport)
+* **Storage**: MySQL 8.0 (seven metadata tables, `sql/V1__init.sql`) · Redis 7
+* **Frontend**: Vue 3 + TypeScript + Vite + Element Plus + Pinia
+* **Observability**: Spring Boot Actuator + Prometheus
+* **Tests**: JUnit 5 — engine 29 + gateway 81, **110 backend tests all green**; plus Playwright UI smoke scripts
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```text
 AllCLI/
-├── engine/       # L1 转化引擎：OpenAPI → 工具定义（可执行 jar CLI）
-├── gateway/      # L4 运行时网关：invoke 流水线 + L3 目录 + MCP Server + admin API（同进程）
-├── frontend/     # 管理控制台（Vue 3 + TS + Element Plus，独立 npm 工程）
-├── examples/     # Agent 接入示例（Python / Node，零依赖）
-├── sql/          # 元数据库 DDL（七表）
-├── testdata/     # petstore.yaml（转化引擎对标输入）
-├── scripts/      # E2E 辅助（MockPetstore 下游替身 / UI 冒烟）
-└── AllCLI_*.md   # 规划文档：需求说明书 / PRD / 架构选型 / WBS 排期 / 使用手册…
+├── engine/       # L1 conversion engine: OpenAPI → tool definitions (executable jar CLI)
+├── gateway/      # L4 runtime gateway: invoke pipeline + L3 catalog + MCP Server + admin API (same process)
+├── frontend/     # Admin console (Vue 3 + TS + Element Plus, standalone npm project)
+├── examples/     # Agent integration examples (Python / Node, zero dependencies)
+├── sql/          # Metadata database DDL (seven tables)
+├── testdata/     # petstore.yaml (conversion engine reference input)
+├── scripts/      # E2E helpers (MockPetstore downstream stand-in / UI smoke tests)
+└── AllCLI_*.md   # Planning docs: requirements spec / PRD / architecture choices / WBS schedule / user guide…
 ```
 
-## 🚀 本地运行
+## 🚀 Getting Started
 
-1. **克隆仓库**
+1. **Clone the repository**
 
    ```shell
    git clone https://gitee.com/Zephyr2026/AllCLI.git
    cd AllCLI
    ```
 
-2. **准备环境**：JDK 17+ · Maven 3.6+ · Node ≥ 20（仅前端）· MySQL 8 + Redis 7（Docker 即可）
+2. **Prepare the environment**: JDK 17+ · Maven 3.6+ · Node ≥ 20 (frontend only) · MySQL 8 + Redis 7 (Docker works fine)
 
    ```shell
    docker run -d --name allcli-mysql -e MYSQL_ROOT_PASSWORD=allcli -e MYSQL_DATABASE=allcli -p 3306:3306 mysql:8.0
@@ -77,21 +79,21 @@ AllCLI/
    docker exec -i allcli-mysql mysql -uroot -pallcli allcli < sql/V1__init.sql
    ```
 
-   再按需修改 `gateway/src/main/resources/application.yml` 中的 MySQL / Redis 地址，以及 `allcli.admin.tokens`（管理面 token）。
+   Then adjust the MySQL / Redis addresses in `gateway/src/main/resources/application.yml`, as well as `allcli.admin.tokens` (the admin-plane token), as needed.
 
-3. **构建与全量测试**（110 个测试）
+3. **Build and run the full test suite** (110 tests)
 
    ```shell
    mvn test
    ```
 
-4. **启动网关**（端口 8088，含 MCP Server 与 admin API）
+4. **Start the gateway** (port 8088, includes the MCP Server and admin API)
 
    ```shell
    mvn -pl gateway -am spring-boot:run
    ```
 
-5. **启动前端控制台**（http://localhost:5173）
+5. **Start the frontend console** (http://localhost:5173)
 
    ```shell
    cd frontend
@@ -99,43 +101,43 @@ AllCLI/
    npm run dev
    ```
 
-6. **登录**：登录页填入 admin token（开发默认 `admin_m4-dev-admin`，即 `admin_` + 配置值）与默认 Agent ID（演示用 `agent_demo`）。
-<img width="1920" height="947" alt="首页" src="https://github.com/user-attachments/assets/56f4faa5-1ac5-4f53-bca3-b5d898bb2484" />
+6. **Log in**: on the login page, enter the admin token (dev default `admin_m4-dev-admin`, i.e. `admin_` + the configured value) and the default Agent ID (`agent_demo` for demo purposes).
+<img width="1920" height="947" alt="Dashboard" src="https://github.com/user-attachments/assets/56f4faa5-1ac5-4f53-bca3-b5d898bb2484" />
 
-## 🔌 接入你的 Agent
+## 🔌 Connect Your Agent
 
-任何 MCP 客户端均可接入。以 Claude Code 为例：
+Any MCP client can connect. Taking Claude Code as an example:
 
 ```shell
 claude mcp add --transport http allcli http://localhost:8088/mcp \
   --header "Authorization: Bearer agent_demo"
 ```
 
-会话内即可看到已发布工具（如 `listPets` / `createPet`，含只读 / 破坏性注解），`tools/call` 全部经网关流水线治理。零依赖的 Python / Node 接入示例见 `examples/`（目录检索 → 质量自检 → 沙箱 → 真实调用四步）。
+Published tools (e.g. `listPets` / `createPet`, with read-only / destructive annotations) show up in the session, and every `tools/call` is governed by the gateway pipeline. Zero-dependency Python / Node integration examples live in `examples/` (a four-step flow: catalog search → quality self-check → sandbox → real invocation).
 
-## 🔧 部署建议
+## 🔧 Deployment
 
-* 网关为单体 Spring Boot 应用：`mvn package` 后 `java -jar gateway/target/*.jar` 单进程部署，外置 MySQL / Redis
-* MCP 端点 `/mcp` 与 REST `/api/v1/**` 均需带 token（Agent 侧 `agent_<id>`，管理面 `admin_<secret>`），建议置于反向代理 / 内网之后
-* Actuator 仅暴露 `health,prometheus`，Prometheus 从 `/actuator/prometheus` 抓取
+* The gateway is a monolithic Spring Boot app: run `mvn package`, then deploy `java -jar gateway/target/*.jar` as a single process with external MySQL / Redis
+* Both the MCP endpoint `/mcp` and the REST API `/api/v1/**` require a token (`agent_<id>` on the agent side, `admin_<secret>` for the admin plane); keeping them behind a reverse proxy / intranet is recommended
+* Actuator exposes only `health,prometheus`; Prometheus scrapes `/actuator/prometheus`
 
-## 📌 注意事项
+## 📌 Caveats
 
-* 一期 Agent / admin token 为演示形态（无签名、明文配置、单角色无 RBAC），生产环境需替换为 OAuth2 / API Key 体系
-* 导入 job 与 MCP 目录热更新为单节点内存态，多实例部署需引入持久化或广播机制
-* HITL 审批结果不主动回推 MCP 会话，Agent 依据 `pending_approval` 返回的 approvalId 轮询或转述
-* 业务错误统一以 HTTP 200 + 错误码信封返回（`code != "OK"` 即失败），集成时请按信封字段分支处理
+* Phase-1 agent / admin tokens are demo-grade (unsigned, plaintext config, single role without RBAC); replace them with an OAuth2 / API Key setup in production
+* Import jobs and MCP catalog hot-reload are single-node in-memory state; multi-instance deployments need persistence or a broadcast mechanism
+* HITL approval results are not pushed back to the MCP session; the Agent polls or relays using the approvalId returned with `pending_approval`
+* Business errors are returned uniformly as HTTP 200 + an error-code envelope (`code != "OK"` means failure); branch on the envelope fields when integrating
 
-## 🏆 致谢
+## 🏆 Acknowledgements
 
-* 感谢 **[Model Context Protocol](https://modelcontextprotocol.io/)** 与 **Spring AI** 团队提供的开放协议与实现。
-* 感谢 **Vue**、**Element Plus** 带来的高效前端开发体验。
-* 感谢 **MySQL**、**Redis** 等开源软件构建的坚实生态。
+* Thanks to the **[Model Context Protocol](https://modelcontextprotocol.io/)** and **Spring AI** teams for the open protocol and implementation.
+* Thanks to **Vue** and **Element Plus** for a highly productive frontend development experience.
+* Thanks to **MySQL**, **Redis**, and other open-source software for a solid ecosystem.
 
-## 🤝 赞助
+## 🤝 Sponsor
 
 <img width="400" height="550" alt="3d76dc2bc7a9bcd1cf643dec20b9090e" src="https://github.com/user-attachments/assets/b761055c-83ec-43f8-8463-e118acfa9bd0" />
 
-## 📝 许可证
+## 📝 License
 
-[木兰公共许可证（第 2 版）MulanPSL-2.0](LICENSE) © 2026 AllCLI 贡献者
+[Mulan Public License, Version 2 (MulanPSL-2.0)](LICENSE) © 2026 AllCLI Contributors
